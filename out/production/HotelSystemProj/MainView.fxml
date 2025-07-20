@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="MainController">
+    <top>
+        <Label text="Hello, User" style="-fx-font-size: 24px; -fx-padding: 10;" />
+    </top>
+
+    <left>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Button text="About Us" onAction="#handleAbout" />
+            <Button text="Manage Reservations" onAction="#handleManage" />
+            <Button text="Settings" onAction="#handleSettings" />
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="15" style="-fx-padding: 10;">
+            <Label text="Book Your Stay" style="-fx-font-size: 18px;" />
+
+            <HBox spacing="20">
+                <VBox spacing="5">
+                    <Label text="Check-in:" />
+                    <DatePicker fx:id="checkInDate" />
+                    <Label text="Check-out:" />
+                    <DatePicker fx:id="checkOutDate" />
+                </VBox>
+
+                <VBox spacing="5">
+                    <Label text="Adults:" />
+                    <TextField fx:id="adultsField" promptText="e.g. 2" />
+                    <Label text="Children:" />
+                    <TextField fx:id="childrenField" promptText="e.g. 0" />
+                    <Label text="Rooms:" />
+                    <TextField fx:id="roomCountField" promptText="e.g. 1" />
+                </VBox>
+            </HBox>
+
+            <Label text="Choose your package" style="-fx-font-size: 16px;" />
+            <HBox spacing="20">
+                <VBox>
+                    <RadioButton text="Basic Package ($100/night)" fx:id="basicPackage" />
+                </VBox>
+                <VBox>
+                    <RadioButton text="Premium Package ($220/night)" fx:id="premiumPackage" />
+                </VBox>
+            </HBox>
+
+            <Button text="Submit" onAction="#handleSubmit" />
+        </VBox>
+    </center>
+</BorderPane>
