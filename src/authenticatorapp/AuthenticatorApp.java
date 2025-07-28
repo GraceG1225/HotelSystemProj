@@ -5,8 +5,11 @@
 package authenticatorapp;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import java.io.IOException;
 
 public class AuthenticatorApp extends Application {
 
@@ -52,10 +55,21 @@ public class AuthenticatorApp extends Application {
         return SQLite.insertUser(email, password);
     }
 
-    // Show main app page after login/register
+    // show reservation screen
     public void showMainAppScene() {
-        MainAppPage mainAppPage = new MainAppPage();
-        Scene scene = new Scene(mainAppPage.getUI(), 500, 400);
-        primaryStage.setScene(scene);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/reservation/MainView.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root, 600, 500);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Reservation Page");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 }

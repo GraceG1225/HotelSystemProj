@@ -6,8 +6,16 @@ package authenticatorapp;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.Parent;
+import javafx.scene.text.Font;
+import javafx.fxml.FXMLLoader;
+
+import java.io.IOException;
+
+import reservation.MainController;
 
 public class LoginPage {
 
@@ -16,7 +24,8 @@ public class LoginPage {
     public LoginPage(AuthenticatorApp app) {
         this.app = app;
     }
-//Build and returens whole sign up screen such as title and textfield
+
+    // Build and return login screen UI
     public Pane getUI() {
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
@@ -24,6 +33,7 @@ public class LoginPage {
         content.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-background-radius: 10;");
 
         Label title = new Label("Login");
+        title.setFont(new Font("Arial", 24));
 
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
@@ -44,7 +54,22 @@ public class LoginPage {
                 message.setStyle("-fx-text-fill: red;");
             } else if (app.authenticate(email, password)) {
                 message.setText("");
-                app.showMainAppScene();
+                try {
+                    // loads reservation page's mainview.fxml (please)
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/reservation/MainView.fxml"));
+                    Parent reservationRoot = loader.load();
+
+                    MainController controller = loader.getController();
+                    // controller.setUserEmail(email); // might use later to allow users to log in and edit reservations
+
+                    Scene scene = new Scene(reservationRoot);
+                    app.getPrimaryStage().setScene(scene);
+                    app.getPrimaryStage().setTitle("Reservation Page");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    message.setText("Failed to load reservation page.");
+                    message.setStyle("-fx-text-fill: red;");
+                }
             } else {
                 message.setText("Invalid email or password.");
                 message.setStyle("-fx-text-fill: red;");

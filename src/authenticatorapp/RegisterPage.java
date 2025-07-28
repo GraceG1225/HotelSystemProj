@@ -56,13 +56,20 @@ public class RegisterPage {
                 //So we can see password email created tired of writting down
             if (app.registerUser(email, password)) {
                  System.out.println("Registered:");
-                  System.out.println("Email: " + email);
+                 System.out.println("Email: " + email);
                  System.out.println("Password: " + password);
 
                  message.setText("Account created successfully!");
                  message.setStyle("-fx-text-fill: green;");
-                  app.showMainAppScene();
-
+                 
+                 // return to login screen not reservation screen
+                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                 alert.setTitle("Registration Successful");
+                 alert.setHeaderText(null);
+                 alert.setContentText("Your account has been created. Please log in.");
+                 alert.showAndWait();
+                 // redirection
+                 app.showLoginScene();
 
                 } else {
                     message.setText("Email already registered.");
