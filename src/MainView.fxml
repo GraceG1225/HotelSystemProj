@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="MainController"
+            prefWidth="800" prefHeight="600">
+
+    <!-- Top Banner -->
+    <top>
+        <VBox alignment="CENTER">
+            <Label fx:id="welcomeLabel" text="Hello, User" styleClass="title"/>
+        </VBox>
+    </top>
+
+    <!-- Sidebar -->
+    <left>
+        <VBox spacing="10" styleClass="sidebar" BorderPane.alignment="TOP_LEFT">
+            <Button text="About Us" />
+            <Button text="Manage Reservations" />
+            <Button text="Settings" />
+        </VBox>
+    </left>
+
+
+    <!-- Main Form -->
+    <center>
+        <VBox spacing="20" styleClass="card" alignment="CENTER" style="-fx-padding: 20;">
+
+            <!-- Centered title -->
+            <HBox alignment="CENTER">
+                <Label text="Book Your Stay" styleClass="section" />
+            </HBox>
+
+            <!-- Dates -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox spacing="10">
+                    <Label text="Check-in:" />
+                    <DatePicker fx:id="checkInDate" />
+                </VBox>
+                <VBox spacing="10">
+                    <Label text="Check-out:" />
+                    <DatePicker fx:id="checkOutDate" />
+                </VBox>
+            </HBox>
+
+            <!-- Guests -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox spacing="10">
+                    <Label text="Adults:" />
+                    <TextField fx:id="adultsField" promptText="e.g. 2" />
+                </VBox>
+                <VBox spacing="10">
+                    <Label text="Children:" />
+                    <TextField fx:id="childrenField" promptText="e.g. 0" />
+                </VBox>
+                <VBox spacing="10">
+                    <Label text="Rooms:" />
+                    <TextField fx:id="roomCountField" promptText="e.g. 1" />
+                </VBox>
+            </HBox>
+
+            <!-- Package Options -->
+            <HBox alignment="CENTER">
+                <Label text="Choose your package" styleClass="section" />
+            </HBox>
+
+            <HBox spacing="20" alignment="CENTER">
+                <RadioButton text="Basic Package ($100/night)" fx:id="basicPackage" />
+                <RadioButton text="Premium Package ($220/night)" fx:id="premiumPackage" />
+            </HBox>
+
+            <!-- Submit button centered -->
+            <HBox alignment="CENTER">
+                <Button text="Submit" styleClass="cta-button" onAction="#handleSubmit" />
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>
