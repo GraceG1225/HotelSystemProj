@@ -4,12 +4,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import paymentapp.PaymentController;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 public class MainController {
@@ -43,7 +48,6 @@ public class MainController {
         });
     }
 
-    // inactivity timer
     private void startInactivityTimer() {
         inactivityTimer = new Timeline(new KeyFrame(Duration.millis(TIMEOUT_DURATION), e -> handleTimeout()));
         inactivityTimer.setCycleCount(1);
@@ -57,16 +61,16 @@ public class MainController {
         }
     }
 
-private void handleTimeout() {
-    Platform.runLater(() -> {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Session Timeout");
-        alert.setHeaderText(null);
-        alert.setContentText("You have been inactive for 5 minutes. The session will now end.");
-        alert.showAndWait();
-        Platform.exit(); // back to login screen?
-    });
-}
+    private void handleTimeout() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Session Timeout");
+            alert.setHeaderText(null);
+            alert.setContentText("You have been inactive for 5 minutes. The session will now end.");
+            alert.showAndWait();
+            Platform.exit();
+        });
+    }
 
     @FXML
     private void handleSubmit() {
@@ -112,7 +116,24 @@ private void handleTimeout() {
         }
 
         System.out.println("Booking validated successfully!");
-        showAlert(Alert.AlertType.INFORMATION, "Booking Successful!", "Your reservation has been successfully submitted!");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/paymentapp/PaymentView.fxml"));
+            Parent paymentRoot = loader.load();
+
+            // Get controller and pass booking details
+            PaymentController paymentController = loader.getController();
+            String selectedPackage = basicPackage.isSelected() ? "Basic" : "Premium";
+            paymentController.setBookingDetails(checkIn, checkOut, selectedPackage);
+
+            Scene paymentScene = new Scene(paymentRoot);
+            Stage currentStage = (Stage) checkInDate.getScene().getWindow();
+            currentStage.setScene(paymentScene);
+            currentStage.setTitle("Payment");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load the payment screen.");
+        }
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
@@ -123,18 +144,15 @@ private void handleTimeout() {
         alert.showAndWait();
     }
 
-    @FXML
-    private void handleAbout() {
+    @FXML private void handleAbout() {
         System.out.println("About Us clicked");
     }
 
-    @FXML
-    private void handleManage() {
+    @FXML private void handleManage() {
         System.out.println("Manage Reservations clicked");
     }
 
-    @FXML
-    private void handleSettings() {
+    @FXML private void handleSettings() {
         System.out.println("Settings clicked");
     }
 }

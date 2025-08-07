@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="paymentapp.PaymentController"
+      alignment="CENTER"
+      spacing="20"
+      styleClass="card"
+      style="-fx-padding: 30;">
+
+    <Label text="Payment Information" styleClass="title" />
+
+    <TextField fx:id="nameField" promptText="Name on Card" />
+    <TextField fx:id="cardNumberField" promptText="Card Number" />
+
+    <HBox spacing="10" alignment="CENTER">
+        <TextField fx:id="expiryField" promptText="MM/YY" />
+        <TextField fx:id="cvvField" promptText="CVV" />
+    </HBox>
+
+    <Label fx:id="amountLabel" text="Total: $" styleClass="section" />
+    <Label fx:id="errorLabel" text="" styleClass="error-text" />
+    <Button text="Confirm Payment" onAction="#handleConfirm" styleClass="cta-button" />
+
+</VBox>

@@ -13,7 +13,7 @@ public class PaymentProcessor {
 
     public boolean isValidExpiryDate(String expiryDate) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MO/YR");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
             YearMonth expDate = YearMonth.parse(expiryDate, formatter);
             YearMonth now = YearMonth.now();
             return expDate.isAfter(now) || expDate.equals(now);
