@@ -1,9 +1,14 @@
 package paymentapp;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import javafx.scene.Node;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -34,7 +39,7 @@ public class PaymentController {
     }
 
     @FXML
-    private void handleConfirm() {
+    private void handleConfirm(javafx.event.ActionEvent event) {
         if (nameField.getText().isEmpty() || cardNumberField.getText().isEmpty() ||
             expiryField.getText().isEmpty() || cvvField.getText().isEmpty()) {
             errorLabel.setText("Please fill out all payment fields.");
@@ -57,7 +62,7 @@ public class PaymentController {
         }
 
         if (!paymentProcessor.isValidExpiryDate(expiry)) {
-            errorLabel.setText("Invalid expiry date. Use MM/yy format.");
+            errorLabel.setText("Invalid expiry date. Enter a valid date and please use MO/YR format.");
             return;
         }
 
@@ -69,6 +74,18 @@ public class PaymentController {
         errorLabel.setText("");
         paymentProcessor.chargeCard(totalAmount);
         System.out.println("Payment confirmed!");
-        // navigate to confirmation screen after
+
+        // go to thank you for reserving page
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmationpage/ThankYouPage.fxml"));
+            Scene thankYouScene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(thankYouScene);
+            stage.setTitle("Reservation Confirmed!");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            errorLabel.setText("Sorry! There was an error loading our confirmation screen.");
+        }
     }
 }

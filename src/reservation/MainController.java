@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import paymentapp.PaymentController;
+import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,6 +22,9 @@ public class MainController {
 
     private static final long TIMEOUT_DURATION = 5 * 60 * 1000; // 5min
     private Timeline inactivityTimer;
+
+    private final EventHandler<MouseEvent> mouseEventHandler = e -> resetInactivityTimer();
+    private final EventHandler<KeyEvent> keyEventHandler = e -> resetInactivityTimer();
 
     @FXML private DatePicker checkInDate;
     @FXML private DatePicker checkOutDate;
@@ -64,7 +68,7 @@ public class MainController {
     private void handleTimeout() {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Session Timeout");
+            alert.setTitle("Session Timeout!");
             alert.setHeaderText(null);
             alert.setContentText("You have been inactive for 5 minutes. The session will now end.");
             alert.showAndWait();
@@ -121,15 +125,28 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/paymentapp/PaymentView.fxml"));
             Parent paymentRoot = loader.load();
 
-            // Get controller and pass booking details
-            PaymentController paymentController = loader.getController();
-            String selectedPackage = basicPackage.isSelected() ? "Basic" : "Premium";
-            paymentController.setBookingDetails(checkIn, checkOut, selectedPackage);
+        // remove event filter from scene (avoids timer passing over to payment screen)
+        Scene currentScene = checkInDate.getScene();
+        if (currentScene != null) {
+            currentScene.removeEventFilter(MouseEvent.ANY, e -> resetInactivityTimer());
+            currentScene.removeEventFilter(KeyEvent.ANY, e -> resetInactivityTimer());
+        }
 
-            Scene paymentScene = new Scene(paymentRoot);
-            Stage currentStage = (Stage) checkInDate.getScene().getWindow();
-            currentStage.setScene(paymentScene);
-            currentStage.setTitle("Payment");
+        // stop and null inactivity timer
+        if (inactivityTimer != null) {
+            inactivityTimer.stop();
+            inactivityTimer = null;
+        }
+
+        // Get controller and pass booking details
+        PaymentController paymentController = loader.getController();
+        String selectedPackage = basicPackage.isSelected() ? "Basic" : "Premium";
+        paymentController.setBookingDetails(checkIn, checkOut, selectedPackage);
+
+        Scene paymentScene = new Scene(paymentRoot);
+        Stage currentStage = (Stage) checkInDate.getScene().getWindow();
+        currentStage.setScene(paymentScene);
+        currentStage.setTitle("Payment");
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load the payment screen.");
