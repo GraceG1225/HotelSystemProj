@@ -77,6 +77,20 @@ public class MainController {
     }
 
     @FXML
+    private void handleAbout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/aboutuspage/AboutUsView.fxml"));
+            Parent aboutRoot = loader.load();
+            
+            Stage stage = (Stage) checkInDate.getScene().getWindow();
+            stage.setScene(new Scene(aboutRoot));
+            stage.setTitle("About Us");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleSubmit() {
         System.out.println("Submit button clicked!");
 
@@ -159,10 +173,6 @@ public class MainController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    @FXML private void handleAbout() {
-        System.out.println("About Us clicked");
     }
 
     @FXML private void handleManage() {
