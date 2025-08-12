@@ -6,27 +6,87 @@ package authenticatorapp;
 
 public class Validator {
 
-    // Check if the email is pass intructions
-    public static boolean isValidEmail(String email) {
-        return email != null && email.length() >= 14 && email.endsWith("@gmail.com") && email.substring(0, email.indexOf("@")).length() >= 4; 
+public static boolean isValidEmail(String email) {
+    if (email == null)
+        return false;
+
+    int atPos = email.indexOf('@');
+    if (atPos == -1)
+        return false;
+
+    // Must have 1 to 20 chars before @ to prevent excesive emails
+    if (atPos < 1 || atPos > 20)
+        return false;
+
+    // Allow @gmail.com in any case possibl
+    if (!email.toLowerCase().endsWith("@gmail.com"))
+        return false;
+
+    // No spaces allowed on emails 
+    if (email.contains(" "))
+        return false;
+
+    // First char will always be a letter
+    char firstChar = email.charAt(0);
+    if (!Character.isLetter(firstChar))
+        return false;
+
+    // Only letters and digits can be used to make email no symbols for good.
+    String localPart = email.substring(0, atPos);
+    for (char c : localPart.toCharArray()) {
+        if (!Character.isLetterOrDigit(c))
+            return false;
     }
 
-    
-    // Check if the password good to work
-    public static boolean isValidPassword(String password) {
-          if (password == null || password.length() < 5) return false;
-       boolean hasSymbol = false;
-          boolean hasUpper = false;
-        boolean hasDigit = false;
-        
+    return true;
+}
 
-        // Loop to check password needed.
-        for (char c : password.toCharArray()) {
-                   if (Character.isUpperCase(c)) hasUpper = true;
-             else if (!Character.isLetterOrDigit(c)) hasSymbol = true;
-                   else if (Character.isDigit(c)) hasDigit = true;
-           
+
+    // Check if the password good to work or not
+    public static boolean isValidPassword(String password) {
+        if (password == null || password.length() < 5) 
+            return false;
+
+        boolean hasUpper = false;
+        boolean hasDigit = false;
+        boolean hasSymbol = false;
+
+        // This will check the number of uppcase in the password
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+            if (Character.isUpperCase(c)) {
+                hasUpper = true;
+            }
         }
-        return hasUpper && hasDigit && hasSymbol;
+
+        // This wil lcheck the digits that was inputed in the password
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+            if (Character.isDigit(c)) {
+                hasDigit = true;
+                break;
+            }
+        }
+
+        // checks symbols that inputed from password
+        int symbolCount = 0;
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+            if (!Character.isLetterOrDigit(c)) {
+                hasSymbol = true;
+                symbolCount++;
+            }
+        }
+
+       
+        if (!hasSymbol && symbolCount < 1) {
+            return false;
+        }
+
+        if (hasUpper && hasDigit && hasSymbol) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -1,30 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package authenticatorapp;
 
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package adminpage;
+
+import authenticatorapp.SQLite;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import authenticatorapp.AuthenticatorApp;
 
-public class RegisterPage {
-    
+public class AdminLoginPage {
+
     private AuthenticatorApp app;
 
-    public RegisterPage(AuthenticatorApp app) {
+    public AdminLoginPage(AuthenticatorApp app) {
         this.app = app;
     }
-
-    //This method was designed to allow pictures for the background.
+    
+    //This method was designed to allow pictures for the background. Note: edited for integration
     private String getBackgroundStyle() {
-        return "-fx-background-image: url('file:src/authenticatorapp/picture2.jpg'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center;";
+        String imageUrl = getClass().getResource("/authenticatorapp/picture.jpg").toExternalForm();
+        return "-fx-background-image: url('" + imageUrl + "'); " +
+               "-fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center;";
     }
+
     // Hides or shows password by cllicking button
 private void HideOrShowPass(PasswordField hidePass, TextField showPass, Button toggleBtn) {
     if (hidePass.isVisible()) {
@@ -46,19 +48,16 @@ private void HideOrShowPass(PasswordField hidePass, TextField showPass, Button t
     }
 }
 
-    //Build and returns whole login  screen such as title and buttons and textfield
+    // Builds the JavaFX layout buttons, textfields, etc.
     public Pane getUI() {
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
         content.setAlignment(Pos.CENTER);
 
-        Label title = new Label("Create Account");
+        Label title = new Label("Admin Login");
 
-        TextField nameField = new TextField();
-        nameField.setPromptText("Full Name");
-
-        TextField emailField = new TextField();
-        emailField.setPromptText("Email");
+        TextField idField = new TextField();
+        idField.setPromptText("Admin ID");
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
@@ -68,53 +67,53 @@ private void HideOrShowPass(PasswordField hidePass, TextField showPass, Button t
         passwordVisible.setVisible(false);
         passwordVisible.setManaged(false);
 
+        // Shows or hides the password
         Button togglePasswordButton = new Button("Show");
         togglePasswordButton.setOnAction(e -> HideOrShowPass(passwordField, passwordVisible, togglePasswordButton));
 
         Label message = new Label();
 
-        Button registerButton = new Button("Register");
-        registerButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
-        registerButton.setOnAction(e -> {
-            String name = nameField.getText().trim();
-            String email = emailField.getText().trim();
-            String password = passwordField.isVisible() ? passwordField.getText() : passwordVisible.getText();
+        Button loginButton = new Button("Login as Admin");
+        loginButton.setStyle("-fx-background-color: #cc0000; -fx-text-fill: white;");
+        
+       
+        loginButton.setOnAction(e -> {
+            String id = idField.getText().trim();
+            String password = "";
 
-            if (name.isEmpty()) {
-                message.setText("Name cannot be empty.");
-                message.setStyle("-fx-text-fill: red;");
-                return;
-            }
-
-            Validator validator = new Validator();
-
-            if (!validator.isValidEmail(email)) {
-                message.setText("Invalid email address. Please enter a valid Gmail address.");
-                message.setStyle("-fx-text-fill: red;");
-                return;
-            }
-
-            if (!validator.isValidPassword(password)) {
-                message.setText("Password must be at least 5 characters and include uppercase letters, digits, and symbols.");
-                message.setStyle("-fx-text-fill: red;");
-                return;
-            }
-
-            if (app.registerUser(email, password)) {
-                message.setText("Account created successfully!");
-                message.setStyle("-fx-text-fill: green;");
-                app.showMainAppScene();
+            if (passwordField.isVisible()) {
+                password = passwordField.getText().trim();
             } else {
-                message.setText("Email already registered.");
+                password = passwordVisible.getText().trim();
+            }
+
+            if (id.equals("")) {
+                message.setText("Admin ID cannot be empty.");
+                message.setStyle("-fx-text-fill: red;");
+                return;
+            }
+
+            if (password.length() == 0) {
+                message.setText("Enter your Password.");
+                message.setStyle("-fx-text-fill: red;");
+                return;
+            }
+
+            if (SQLite.checkAdmin(id, password)) {
+                message.setText("");
+                app.showAdminManagementControl();
+            } else {
+                message.setText("Invalid admin credentials.");
                 message.setStyle("-fx-text-fill: red;");
             }
         });
 
-        Button goToLogin = new Button("Back to Login");
-        goToLogin.setOnAction(e -> app.showLoginScene());
+        Button backToLogin = new Button("Back to User Login");
+        backToLogin.setOnAction(e -> app.showLoginScene());
 
-        content.getChildren().addAll(title, nameField, emailField, passwordField, passwordVisible,togglePasswordButton, registerButton, goToLogin, message);
-       //X button that allows you to exit program 
+        content.getChildren().addAll(title, idField, passwordField, passwordVisible, togglePasswordButton, loginButton, backToLogin, message);
+        
+        // Simple way to exit without closing program
         Button closeButton = new Button("X");
         closeButton.setOnAction(e -> System.exit(0));
         closeButton.setStyle("-fx-background-color: transparent; -fx-text-fill: red;");

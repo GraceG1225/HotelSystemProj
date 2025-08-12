@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import adminpage.AdminLoginPage;
 
 public class AuthenticatorApp extends Application {
 
@@ -53,6 +54,24 @@ public class AuthenticatorApp extends Application {
     // Registers new user in DB
     public boolean registerUser(String email, String password) {
         return SQLite.insertUser(email, password);
+    }
+
+    /*
+    public void showAdminLoginScene() {
+    AdminLoginPage adminLoginPage = new AdminLoginPage(this);
+    Scene scene = new Scene(adminLoginPage.getUI(), 400, 300);
+    primaryStage.setScene(scene);
+    }
+    */
+
+    // method to integrate AdminLoginWindow
+    public void showAdminLoginWindow() {
+        AdminLoginPage adminLoginPage = new AdminLoginPage(this);
+        Scene scene = new Scene(adminLoginPage.getUI(), 400, 300);
+        Stage adminStage = new Stage();
+        adminStage.setTitle("Admin Login");
+        adminStage.setScene(scene);
+        adminStage.show();
     }
 
     // show reservation screen

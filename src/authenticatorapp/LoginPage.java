@@ -12,8 +12,9 @@ import javafx.scene.layout.*;
 import javafx.scene.Parent;
 import javafx.scene.text.Font;
 import javafx.fxml.FXMLLoader;
-
 import java.io.IOException;
+import adminpage.AdminAuthenticatorApp;
+
 
 import reservation.MainController;
 
@@ -25,7 +26,34 @@ public class LoginPage {
         this.app = app;
     }
 
-    // Build and return login screen UI
+    // Method for background image styling
+    private String getBackgroundStyle() {
+        String imageUrl = getClass().getResource("/authenticatorapp/picture.jpg").toExternalForm();
+        return "-fx-background-image: url('" + imageUrl + "'); " +
+        "-fx-background-size: cover; -fx-background-repeat: no-repeat; " +
+        "-fx-background-position: center;";
+    }
+
+    // Show/hide password toggle
+    private void HideOrShowPass(PasswordField hidePass, TextField showPass, Button toggleBtn) {
+        if (hidePass.isVisible()) {
+            showPass.setText(hidePass.getText());
+            hidePass.setVisible(false);
+            hidePass.setManaged(false);
+            showPass.setVisible(true);
+            showPass.setManaged(true);
+            toggleBtn.setText("Hide");
+        } else {
+            hidePass.setText(showPass.getText());
+            showPass.setVisible(false);
+            showPass.setManaged(false);
+            hidePass.setVisible(true);
+            hidePass.setManaged(true);
+            toggleBtn.setText("Show");
+        }
+    }
+
+    // Build UI
     public Pane getUI() {
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
@@ -41,26 +69,37 @@ public class LoginPage {
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
 
+        TextField passwordVisible = new TextField();
+        passwordVisible.setPromptText("Password");
+        passwordVisible.setVisible(false);
+        passwordVisible.setManaged(false);
+
+        Button togglePasswordButton = new Button("Show");
+        togglePasswordButton.setOnAction(e -> HideOrShowPass(passwordField, passwordVisible, togglePasswordButton));
+
         Label message = new Label();
 
         Button loginButton = new Button("Login");
         loginButton.setStyle("-fx-background-color: #0033cc; -fx-text-fill: white;");
         loginButton.setOnAction(e -> {
             String email = emailField.getText().trim();
-            String password = passwordField.getText().trim();
+            String password = passwordField.isVisible() ? passwordField.getText().trim() : passwordVisible.getText().trim();
 
-            if (email.isEmpty() || password.isEmpty()) {
-                message.setText("Please enter email and password.");
-                message.setStyle("-fx-text-fill: red;");
+            // Use Validator class to check validity
+            if (!Validator.isValidEmail(email)) {
+                message.setText("Invalid email");
+            } else if (!Validator.isValidPassword(password)) {
+                message.setText("Invalid password");
             } else if (app.authenticate(email, password)) {
                 message.setText("");
+
                 try {
-                    // loads reservation page's mainview.fxml (please)
+                    // FXML reservation logic from original
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/reservation/MainView.fxml"));
                     Parent reservationRoot = loader.load();
 
                     MainController controller = loader.getController();
-                    // controller.setUserEmail(email); // might use later to allow users to log in and edit reservations
+                    // controller.setUserEmail(email); // optional, if needed
 
                     Scene scene = new Scene(reservationRoot);
                     app.getPrimaryStage().setScene(scene);
@@ -70,16 +109,25 @@ public class LoginPage {
                     message.setText("Failed to load reservation page.");
                     message.setStyle("-fx-text-fill: red;");
                 }
+
             } else {
-                message.setText("Invalid email or password.");
-                message.setStyle("-fx-text-fill: red;");
+                message.setText("Password or Email Invalid");
             }
+
+            message.setStyle("-fx-text-fill: red;");
         });
 
         Button goToRegister = new Button("Create Account");
         goToRegister.setOnAction(e -> app.showRegisterScene());
 
-        content.getChildren().addAll(title, emailField, passwordField, loginButton, goToRegister, message);
+        Button adminLoginButton = new Button("Admin Login");
+        adminLoginButton.setOnAction(e -> {
+            app.showAdminLoginWindow(); // calls method added in AuthenticatorApp
+            });
+
+
+        content.getChildren().addAll(title, emailField, passwordField, passwordVisible,
+                togglePasswordButton, loginButton, goToRegister, adminLoginButton, message);
 
         Button closeButton = new Button("X");
         closeButton.setOnAction(e -> System.exit(0));
@@ -91,6 +139,9 @@ public class LoginPage {
         VBox layout = new VBox(closeBar, content);
         layout.setAlignment(Pos.CENTER);
 
-        return new StackPane(layout);
+        StackPane root = new StackPane(layout);
+        root.setStyle(getBackgroundStyle());
+
+        return root;
     }
 }
