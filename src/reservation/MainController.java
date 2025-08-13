@@ -1,3 +1,13 @@
+/**
+ * Class Name: MainController
+ * Date: July 14, 2025
+ * Programmers: Maliya Cockrell, Grace Gallardo
+ *
+ * Controls the main reservation screen. Handles user input for booking details such as
+ * check-in/out dates, number of guests, and package selection, and applies validation rules per hotel policy.
+ * It also manages user inactivity timeout and navigation to other screens like Payment, Manage Reservations, and About Us.
+ */
+
 package reservation;
 
 import javafx.animation.KeyFrame;
@@ -28,6 +38,10 @@ public class MainController {
     private ToggleGroup packageToggleGroup = new ToggleGroup();
     private BookingLimits limits = new BookingLimits();
 
+
+    /**
+     * Initializes the controller. Sets up radio button group and inactivity timer.
+     */
     @FXML
     public void initialize() {
         basicPackage.setToggleGroup(packageToggleGroup);
@@ -42,7 +56,9 @@ public class MainController {
             }
         });
     }
-
+    /**
+     * Starts the inactivity timer, which logs out the user after 5 minutes of inactivity.
+     */
     // inactivity timer
     private void startInactivityTimer() {
         inactivityTimer = new Timeline(new KeyFrame(Duration.millis(TIMEOUT_DURATION), e -> handleTimeout()));
@@ -50,13 +66,18 @@ public class MainController {
         inactivityTimer.play();
     }
 
+    /**
+     * Resets the inactivity timer if the user interacts with the screen.
+     */
     private void resetInactivityTimer() {
         if (inactivityTimer != null) {
             inactivityTimer.stop();
             inactivityTimer.playFromStart();
         }
     }
-
+    /**
+     * Handles user timeout by showing an alert and exiting the application.
+     */
 private void handleTimeout() {
     Platform.runLater(() -> {
         Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -68,6 +89,9 @@ private void handleTimeout() {
     });
 }
 
+    /**
+     * Handles the Submit button click. Validates all user input and displays confirmation or errors.
+     */
     @FXML
     private void handleSubmit() {
         System.out.println("Submit button clicked!");
@@ -115,6 +139,13 @@ private void handleTimeout() {
         showAlert(Alert.AlertType.INFORMATION, "Booking Successful!", "Your reservation has been successfully submitted!");
     }
 
+    /**
+     * Displays an alert popup with the specified information.
+     *
+     * @param alertType the type of alert to display
+     * @param title the title of the alert
+     * @param message the message content of the alert
+     */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -123,16 +154,25 @@ private void handleTimeout() {
         alert.showAndWait();
     }
 
+    /**
+     * Handles the About Us button.
+     */
     @FXML
     private void handleAbout() {
         System.out.println("About Us clicked");
     }
 
+    /**
+     * Handles the Manage Reservations button.
+     */
     @FXML
     private void handleManage() {
         System.out.println("Manage Reservations clicked");
     }
 
+    /**
+     * Handles the Settings button.
+     */
     @FXML
     private void handleSettings() {
         System.out.println("Settings clicked");
