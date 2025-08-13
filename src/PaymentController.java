@@ -1,3 +1,15 @@
+<<<<<<< Updated upstream
+=======
+/**
+ * Class Name: PaymentController
+ * Date: July 30, 2025
+ * Programmer: Maliya Cockrell
+ *
+ * Manages the payment screen, receives reservation info from the previous screen,
+ * calculates total cost based on package and length of stay, and handles payment form input.
+ */
+
+>>>>>>> Stashed changes
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -14,6 +26,16 @@ public class PaymentController {
 
     private double totalAmount;
 
+<<<<<<< Updated upstream
+=======
+    /**
+     * Receives booking details and calculates total cost.
+     *
+     * @param checkInDate check-in date selected by user
+     * @param checkOutDate check-out date selected by user
+     * @param packageType selected package (Basic or Premium)
+     */
+>>>>>>> Stashed changes
     public void setBookingDetails(LocalDate checkInDate, LocalDate checkOutDate, String packageType) {
         long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
         double pricePerNight = 0;
@@ -27,6 +49,12 @@ public class PaymentController {
         amountLabel.setText(String.format("Total: $%.2f", total));
     }
 
+<<<<<<< Updated upstream
+=======
+    /**
+     * Validates form input and confirms payment.
+     */
+>>>>>>> Stashed changes
     @FXML
     private void handleConfirm() {
         if (nameField.getText().isEmpty() || cardNumberField.getText().isEmpty() || expiryField.getText().isEmpty() || cvvField.getText().isEmpty()) {
