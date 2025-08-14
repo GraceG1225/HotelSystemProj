@@ -1,3 +1,12 @@
+/** Class Name: RegisterPage
+ * Date: July 20, 2025
+ * Programmer: Fotios Bampouridis
+ *
+ * This class builds the user interface for the account registration screen of the Hotel Reservation System.
+ * It collects the user's full name, email, and password, and performs input validation, and interacts with the backend
+ * to register the new user in the database.
+ */
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -13,10 +22,20 @@ public class RegisterPage {
 
     private AuthenticatorApp app;
 
+    /**
+     * Builds and displays the registration UI for creating a new user account.
+     */
     public RegisterPage(AuthenticatorApp app) {
         this.app = app;
     }
-//Build and returens whole sign up screen such as title and textfield
+
+    /**
+     * Builds and returns the entire UI for the registration screen.
+     * Includes form fields for full name, email, and password,
+     * and handles validation + registration logic.
+     *
+     * @return a Pane containing the registration interface
+     */
     public Pane getUI() {
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));

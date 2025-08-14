@@ -1,3 +1,11 @@
+/**
+ * Class Name: BackgroundScene
+ * Date: August 3, 2025
+ * Programmer: Fotios Bampouridis
+ *
+ * This class creates a JavaFX scene with a full-scene background image.
+ */
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -11,6 +19,12 @@ import javafx.stage.Stage;
 
 public class BackgroundScene {
 
+    /**
+     * Creates and returns a JavaFX Scene with a background image.
+     * The scene uses a StackPane, which allows other content to be added on top of the image.
+     *
+     * @return a Scene object with a background image and default size of 800x600
+     */
     public Scene createScene() {
      
         Pane content = new Pane();

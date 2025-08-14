@@ -1,3 +1,14 @@
+/** Class Name: LoginPage
+ * Date: July 17, 2025
+ * Programmer: Fotios Bampouridis
+ *
+ * This class builds the user interface for the login screen of the Hotel Reservation System.
+ * It provides a login form with email and password fields, a "Create Account" button that links to the registration screen, and
+ * handles authentication logic using AuthenticatorApp backend.
+ *
+ */
+
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -21,11 +32,20 @@ public class LoginPage {
 
     private AuthenticatorApp app;
 
+    /**
+     * Constructor that sets the parent application reference.
+     *
+     * @param app the AuthenticatorApp instance
+     */
     public LoginPage(AuthenticatorApp app) {
         this.app = app;
     }
 
-    // Build and return login screen UI
+    /**
+     * Builds and returns the login UI as a JavaFX Pane.
+     *
+     * @return a Pane object representing the login screen
+     */
     public Pane getUI() {
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
