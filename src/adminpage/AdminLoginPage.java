@@ -28,7 +28,7 @@ public class AdminLoginPage {
     }
 
     // Hides or shows password by cllicking button
-private void HideOrShowPass(PasswordField hidePass, TextField showPass, Button toggleBtn) {
+    private void HideOrShowPass(PasswordField hidePass, TextField showPass, Button toggleBtn) {
     if (hidePass.isVisible()) {
         showPass.setText(hidePass.getText());
         hidePass.setVisible(false);

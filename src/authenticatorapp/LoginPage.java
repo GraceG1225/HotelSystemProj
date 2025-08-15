@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package authenticatorapp;
 
 import javafx.geometry.Insets;
@@ -14,8 +18,7 @@ import javafx.scene.text.Font;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 import adminpage.AdminAuthenticatorApp;
-
-
+import authenticatorapp.AuthenticatorApp;
 import reservation.MainController;
 
 public class LoginPage {

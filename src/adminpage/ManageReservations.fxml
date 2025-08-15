@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="adminpage.ManageReservationsController"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-padding: 30; -fx-background-color: white;">
+
+    <Label text="Your Upcoming Reservations:"
+           styleClass="title" />
+
+    <Label fx:id="reservationDetails"
+           text="Room: Premium\nDates: July 15–17\nGuests: 2 Adults"
+           wrapText="true"
+           style="-fx-font-size: 16px;" />
+
+    <Button text="Cancel Reservation" onAction="#handleCancel"
+            style="-fx-font-size: 14px; -fx-padding: 8 20;" />
+
+    <Label fx:id="statusLabel"
+           text=""
+           style="-fx-text-fill: red;" />
+
+    <Button text="Back" onAction="#handleBack"
+            style="-fx-font-size: 14px; -fx-padding: 8 20;" />
+
+</VBox>

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMain.java to edit this template
- */
 package authenticatorapp;
 
 import javafx.application.Application;
@@ -11,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 import adminpage.AdminLoginPage;
+import adminpage.AdminManagementControl;
 
 public class AuthenticatorApp extends Application {
 
@@ -25,11 +22,18 @@ public class AuthenticatorApp extends Application {
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Dream Hotel");
 
-        // Create DB users table if not exists
+        // make sure database tables exist
         SQLite.createUsersTable();
+        SQLite.createAdminTable();  // makes admins table
 
+        // initial login scene
         showLoginScene();
         primaryStage.show();
+    }
+
+    // getter for primaryStage (for loginpage)
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     // Shows the registration screen
@@ -56,15 +60,7 @@ public class AuthenticatorApp extends Application {
         return SQLite.insertUser(email, password);
     }
 
-    /*
-    public void showAdminLoginScene() {
-    AdminLoginPage adminLoginPage = new AdminLoginPage(this);
-    Scene scene = new Scene(adminLoginPage.getUI(), 400, 300);
-    primaryStage.setScene(scene);
-    }
-    */
-
-    // method to integrate AdminLoginWindow
+    // Show admin login window
     public void showAdminLoginWindow() {
         AdminLoginPage adminLoginPage = new AdminLoginPage(this);
         Scene scene = new Scene(adminLoginPage.getUI(), 400, 300);
@@ -74,7 +70,15 @@ public class AuthenticatorApp extends Application {
         adminStage.show();
     }
 
-    // show reservation screen
+    // Show admin management page
+    public void showAdminManagementControl() {
+        // pass to AdminManagementControl
+        AdminManagementControl adminPage = new AdminManagementControl(this);
+        Scene scene = new Scene(adminPage.getUI(), 500, 400);
+        primaryStage.setScene(scene);
+    }
+
+    // Show reservation screen
     public void showMainAppScene() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/reservation/MainView.fxml"));
@@ -86,9 +90,5 @@ public class AuthenticatorApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public Stage getPrimaryStage() {
-        return primaryStage;
     }
 }

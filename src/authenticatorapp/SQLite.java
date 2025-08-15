@@ -8,13 +8,12 @@ public class SQLite {
 
     // Connect to the database (creates file if it doesn't exist)
     private static Connection connect() {
-        Connection conn = null;
         try {
-            conn = DriverManager.getConnection(DB_URL);
+            return DriverManager.getConnection(DB_URL);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            return null;
         }
-        return conn;
     }
 
     // Create users table
@@ -44,13 +43,18 @@ public class SQLite {
 
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
+
+            // Create table
             stmt.execute(createTableSql);
 
+            // Check if default admin exists
             try (PreparedStatement pstmtCheck = conn.prepareStatement(checkAdminExistsSql)) {
                 pstmtCheck.setString(1, "John123!");
                 ResultSet rs = pstmtCheck.executeQuery();
                 int count = rs.getInt("count");
+
                 if (count == 0) {
+                    // Insert default admin
                     try (PreparedStatement pstmtInsert = conn.prepareStatement(insertAdminSql)) {
                         pstmtInsert.setString(1, "John123!");
                         pstmtInsert.setString(2, "John123!");
@@ -58,12 +62,13 @@ public class SQLite {
                     }
                 }
             }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    // Insert new user into users table will returns true if success and also  false if email exists
+    // Insert new user into users table, returns true if success, false if email exists
     public static boolean insertUser(String email, String password) {
         String sql = "INSERT INTO users (email, password) VALUES (?, ?)";
         try (Connection conn = connect();
@@ -73,7 +78,6 @@ public class SQLite {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            // If emailis wrong then will get false
             if (e.getMessage().contains("UNIQUE constraint failed")) {
                 return false;
             }
@@ -82,7 +86,7 @@ public class SQLite {
         }
     }
 
-    // Check if user exists with email and password on the login
+    // Check if user exists with email and password
     public static boolean checkUser(String email, String password) {
         String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
         try (Connection conn = connect();
@@ -90,7 +94,6 @@ public class SQLite {
             pstmt.setString(1, email);
             pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();
-            // login will work if user is found
             return rs.next();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -98,7 +101,7 @@ public class SQLite {
         }
     }
 
-    // Check if admin exists with id and password for the adminlogin
+    // Check if admin exists with id and password
     public static boolean checkAdmin(String id, String password) {
         String sql = "SELECT * FROM admins WHERE id = ? AND password = ?";
         try (Connection conn = connect();
@@ -106,8 +109,7 @@ public class SQLite {
             pstmt.setString(1, id);
             pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();
-          // will login if admin is in the databse
-            return rs.next(); 
+            return rs.next();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
