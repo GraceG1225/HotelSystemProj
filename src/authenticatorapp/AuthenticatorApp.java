@@ -24,6 +24,7 @@ public class AuthenticatorApp extends Application {
 
         SQLite.createUsersTable();
         SQLite.createAdminTable();
+        SQLite.createReservationsTable(); // <-- added to fix "no such table" error
 
         showLoginScene();
         primaryStage.show();

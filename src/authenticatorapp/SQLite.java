@@ -1,6 +1,8 @@
 package authenticatorapp;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLite {
 
@@ -44,17 +46,14 @@ public class SQLite {
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
 
-            // Create table
             stmt.execute(createTableSql);
 
-            // Check if default admin exists
             try (PreparedStatement pstmtCheck = conn.prepareStatement(checkAdminExistsSql)) {
                 pstmtCheck.setString(1, "John123!");
                 ResultSet rs = pstmtCheck.executeQuery();
                 int count = rs.getInt("count");
 
                 if (count == 0) {
-                    // Insert default admin
                     try (PreparedStatement pstmtInsert = conn.prepareStatement(insertAdminSql)) {
                         pstmtInsert.setString(1, "John123!");
                         pstmtInsert.setString(2, "John123!");
@@ -114,5 +113,71 @@ public class SQLite {
             System.out.println(e.getMessage());
             return false;
         }
+    }
+
+    // Create reservations table
+    public static void createReservationsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS reservations (" +
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                     "name TEXT NOT NULL," +
+                     "email TEXT NOT NULL," +
+                     "package TEXT," +
+                     "checkIn TEXT," +
+                     "checkOut TEXT," +
+                     "nights INTEGER," +
+                     "total REAL" +
+                     ");";
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // Insert reservation
+    public static void insertReservation(String name, String email, String packageType,
+                                         String checkIn, String checkOut, int nights, double total) {
+        String sql = "INSERT INTO reservations (name, email, package, checkIn, checkOut, nights, total) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, email);
+            pstmt.setString(3, packageType);
+            pstmt.setString(4, checkIn);
+            pstmt.setString(5, checkOut);
+            pstmt.setInt(6, nights);
+            pstmt.setDouble(7, total);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // Get all reservations
+    public static List<String> getAllReservations() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT * FROM reservations ORDER BY id DESC";
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                String res = String.format("Name: %s\nEmail: %s\nPackage: %s\nCheck-in: %s\nCheck-out: %s\nNights: %d\nTotal: $%.2f",
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("package"),
+                        rs.getString("checkIn"),
+                        rs.getString("checkOut"),
+                        rs.getInt("nights"),
+                        rs.getDouble("total"));
+                list.add(res);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 }

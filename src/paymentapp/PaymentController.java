@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import confirmationemail.EmailService;
+import authenticatorapp.SQLite;
 
 public class PaymentController {
 
@@ -28,12 +29,19 @@ public class PaymentController {
 
     private String recipientEmail;
     private String reservationDetails = "";
+    private String packageTypeGlobal;
+    private LocalDate checkInGlobal;
+    private LocalDate checkOutGlobal;
 
     public void setRecipientEmail(String email) {
         this.recipientEmail = email;
     }
 
     public void setBookingDetails(LocalDate checkInDate, LocalDate checkOutDate, String packageType) {
+        checkInGlobal = checkInDate;
+        checkOutGlobal = checkOutDate;
+        packageTypeGlobal = packageType;
+
         long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
         double pricePerNight = packageType.equalsIgnoreCase("Premium") ? 220 : 100;
 
@@ -70,6 +78,14 @@ public class PaymentController {
         paymentProcessor.chargeCard(totalAmount);
         System.out.println("Payment confirmed!");
 
+        SQLite.createReservationsTable();
+
+        // Save reservation to SQLite
+        long nights = ChronoUnit.DAYS.between(checkInGlobal, checkOutGlobal);
+        SQLite.insertReservation(name, recipientEmail, packageTypeGlobal,
+                checkInGlobal.toString(), checkOutGlobal.toString(),
+                (int) nights, totalAmount);
+
         // show confirmation screen immediately
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmationpage/ThankYouPage.fxml"));
@@ -92,10 +108,10 @@ public class PaymentController {
             javafx.concurrent.Task<Void> emailTask = new javafx.concurrent.Task<>() {
                 @Override
                 protected Void call() {
-                    // include guest's name in email
+                    // include guest name in email
                     emailService.sendConfirmation(recipientEmail, name, reservationDetails);
 
-                    // update label on JavaFX thread
+                    // update label
                     if (emailStatusLabel != null) {
                         javafx.application.Platform.runLater(() -> emailStatusLabel.setText("Confirmation email sent!"));
                     }
