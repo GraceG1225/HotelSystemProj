@@ -7,14 +7,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.Node;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import confirmationemail.EmailService;
 
 public class PaymentController {
 
     @FXML private Label errorLabel;
+    @FXML private Label emailStatusLabel; // show email sending status
     @FXML public TextField nameField;
     @FXML public TextField cardNumberField;
     @FXML public TextField expiryField;
@@ -23,19 +24,27 @@ public class PaymentController {
 
     private double totalAmount;
     private PaymentProcessor paymentProcessor = new PaymentProcessor();
+    private EmailService emailService = new EmailService();
+
+    private String recipientEmail;
+    private String reservationDetails = "";
+
+    public void setRecipientEmail(String email) {
+        this.recipientEmail = email;
+    }
 
     public void setBookingDetails(LocalDate checkInDate, LocalDate checkOutDate, String packageType) {
         long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
-        double pricePerNight = 0;
-
-        if (packageType.equalsIgnoreCase("Basic")) {
-            pricePerNight = 100;
-        } else if (packageType.equalsIgnoreCase("Premium")) {
-            pricePerNight = 220;
-        }
+        double pricePerNight = packageType.equalsIgnoreCase("Premium") ? 220 : 100;
 
         totalAmount = pricePerNight * nights;
         amountLabel.setText(String.format("Total: $%.2f", totalAmount));
+
+        // formatted reservation details
+        reservationDetails = String.format(
+            "Package: %s\nCheck-in: %s\nCheck-out: %s\nNights: %d\nTotal: $%.2f",
+            packageType, checkInDate, checkOutDate, nights, totalAmount
+        );
     }
 
     @FXML
@@ -51,23 +60,9 @@ public class PaymentController {
         String expiry = expiryField.getText().trim();
         String cvv = cvvField.getText().trim();
 
-        if (!paymentProcessor.isValidCardHolderName(name)) {
-            errorLabel.setText("Please enter your full name (first and last).");
-            return;
-        }
-
-        if (!paymentProcessor.isValidCardNumber(cardNumber)) {
-            errorLabel.setText("Invalid card number. Must be exactly 16 digits.");
-            return;
-        }
-
-        if (!paymentProcessor.isValidExpiryDate(expiry)) {
-            errorLabel.setText("Invalid expiry date. Enter a valid date and please use MO/YR format.");
-            return;
-        }
-
-        if (!paymentProcessor.isValidCCV(cvv)) {
-            errorLabel.setText("Invalid CVV. Must be exactly 3 digits.");
+        if (!paymentProcessor.isValidCardHolderName(name) || !paymentProcessor.isValidCardNumber(cardNumber) ||
+            !paymentProcessor.isValidExpiryDate(expiry) || !paymentProcessor.isValidCCV(cvv)) {
+            errorLabel.setText("Please enter valid payment details.");
             return;
         }
 
@@ -75,7 +70,7 @@ public class PaymentController {
         paymentProcessor.chargeCard(totalAmount);
         System.out.println("Payment confirmed!");
 
-        // go to thank you for reserving page
+        // show confirmation screen immediately
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirmationpage/ThankYouPage.fxml"));
             Scene thankYouScene = new Scene(loader.load());
@@ -85,7 +80,29 @@ public class PaymentController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            errorLabel.setText("Sorry! There was an error loading our confirmation screen.");
+            errorLabel.setText("Error loading confirmation screen.");
+        }
+
+        // send email to user in background
+        if (recipientEmail != null && !recipientEmail.isEmpty()) {
+            if (emailStatusLabel != null) {
+                emailStatusLabel.setText("Sending confirmation email...");
+            }
+
+            javafx.concurrent.Task<Void> emailTask = new javafx.concurrent.Task<>() {
+                @Override
+                protected Void call() {
+                    // include guest's name in email
+                    emailService.sendConfirmation(recipientEmail, name, reservationDetails);
+
+                    // update label on JavaFX thread
+                    if (emailStatusLabel != null) {
+                        javafx.application.Platform.runLater(() -> emailStatusLabel.setText("Confirmation email sent!"));
+                    }
+                    return null;
+                }
+            };
+            new Thread(emailTask).start();
         }
     }
 }

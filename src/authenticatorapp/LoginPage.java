@@ -13,31 +13,28 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.Parent;
 import javafx.scene.text.Font;
+import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
-import adminpage.AdminAuthenticatorApp;
-import authenticatorapp.AuthenticatorApp;
 import reservation.MainController;
 
 public class LoginPage {
 
-    private AuthenticatorApp app;
+    private final AuthenticatorApp app;
 
     public LoginPage(AuthenticatorApp app) {
         this.app = app;
     }
 
-    // Method for background image styling
+    // Background image styling
     private String getBackgroundStyle() {
         String imageUrl = getClass().getResource("/authenticatorapp/picture.jpg").toExternalForm();
         return "-fx-background-image: url('" + imageUrl + "'); " +
-        "-fx-background-size: cover; -fx-background-repeat: no-repeat; " +
-        "-fx-background-position: center;";
+               "-fx-background-size: cover; -fx-background-repeat: no-repeat; " +
+               "-fx-background-position: center;";
     }
 
-    // Show/hide password toggle
     private void HideOrShowPass(PasswordField hidePass, TextField showPass, Button toggleBtn) {
         if (hidePass.isVisible()) {
             showPass.setText(hidePass.getText());
@@ -56,7 +53,6 @@ public class LoginPage {
         }
     }
 
-    // Build UI
     public Pane getUI() {
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
@@ -82,56 +78,55 @@ public class LoginPage {
 
         Label message = new Label();
 
+        // Login button
         Button loginButton = new Button("Login");
         loginButton.setStyle("-fx-background-color: #0033cc; -fx-text-fill: white;");
         loginButton.setOnAction(e -> {
             String email = emailField.getText().trim();
             String password = passwordField.isVisible() ? passwordField.getText().trim() : passwordVisible.getText().trim();
 
-            // Use Validator class to check validity
             if (!Validator.isValidEmail(email)) {
-                message.setText("Invalid email");
+                message.setText("Please enter a valid email.");
             } else if (!Validator.isValidPassword(password)) {
-                message.setText("Invalid password");
+                message.setText("Please enter a valid password.");
             } else if (app.authenticate(email, password)) {
                 message.setText("");
 
                 try {
-                    // FXML reservation logic from original
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/reservation/MainView.fxml"));
                     Parent reservationRoot = loader.load();
 
                     MainController controller = loader.getController();
-                    // controller.setUserEmail(email); // optional, if needed
+                    controller.setUserEmail(email); // pass user email
 
                     Scene scene = new Scene(reservationRoot);
                     app.getPrimaryStage().setScene(scene);
                     app.getPrimaryStage().setTitle("Reservation Page");
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     message.setText("Failed to load reservation page.");
-                    message.setStyle("-fx-text-fill: red;");
                 }
 
             } else {
-                message.setText("Password or Email Invalid");
+                message.setText("Oops! Your password or email is invalid.");
             }
 
             message.setStyle("-fx-text-fill: red;");
         });
 
+        // Create Account button
         Button goToRegister = new Button("Create Account");
         goToRegister.setOnAction(e -> app.showRegisterScene());
 
+        // Admin login button
         Button adminLoginButton = new Button("Admin Login");
-        adminLoginButton.setOnAction(e -> {
-            app.showAdminLoginWindow(); // calls method added in AuthenticatorApp
-            });
-
+        adminLoginButton.setOnAction(e -> app.showAdminLoginWindow());
 
         content.getChildren().addAll(title, emailField, passwordField, passwordVisible,
                 togglePasswordButton, loginButton, goToRegister, adminLoginButton, message);
 
+        // Close button
         Button closeButton = new Button("X");
         closeButton.setOnAction(e -> System.exit(0));
         closeButton.setStyle("-fx-background-color: transparent; -fx-text-fill: red;");

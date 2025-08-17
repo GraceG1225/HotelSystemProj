@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import paymentapp.PaymentController;
 import javafx.event.EventHandler;
-
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -37,6 +36,8 @@ public class MainController {
     private ToggleGroup packageToggleGroup = new ToggleGroup();
     private BookingLimits limits = new BookingLimits();
 
+    private String loggedInEmail; // store logged in user email
+
     @FXML
     public void initialize() {
         basicPackage.setToggleGroup(packageToggleGroup);
@@ -50,6 +51,11 @@ public class MainController {
                 startInactivityTimer();
             }
         });
+    }
+
+    // authenticatorapp pass user email
+    public void setUserEmail(String email) {
+        this.loggedInEmail = email;
     }
 
     private void startInactivityTimer() {
@@ -139,28 +145,30 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/paymentapp/PaymentView.fxml"));
             Parent paymentRoot = loader.load();
 
-        // remove event filter from scene (avoids timer passing over to payment screen)
-        Scene currentScene = checkInDate.getScene();
-        if (currentScene != null) {
-            currentScene.removeEventFilter(MouseEvent.ANY, e -> resetInactivityTimer());
-            currentScene.removeEventFilter(KeyEvent.ANY, e -> resetInactivityTimer());
-        }
+            // remove event filter from scene (avoids timer passing over to payment screen)
+            Scene currentScene = checkInDate.getScene();
+            if (currentScene != null) {
+                currentScene.removeEventFilter(MouseEvent.ANY, e -> resetInactivityTimer());
+                currentScene.removeEventFilter(KeyEvent.ANY, e -> resetInactivityTimer());
+            }
 
-        // stop and null inactivity timer
-        if (inactivityTimer != null) {
-            inactivityTimer.stop();
-            inactivityTimer = null;
-        }
+            // stop and null inactivity timer
+            if (inactivityTimer != null) {
+                inactivityTimer.stop();
+                inactivityTimer = null;
+            }
 
-        // Get controller and pass booking details
-        PaymentController paymentController = loader.getController();
-        String selectedPackage = basicPackage.isSelected() ? "Basic" : "Premium";
-        paymentController.setBookingDetails(checkIn, checkOut, selectedPackage);
+            // Get controller and pass booking details
+            PaymentController paymentController = loader.getController();
+            String selectedPackage = basicPackage.isSelected() ? "Basic" : "Premium";
+            paymentController.setBookingDetails(checkIn, checkOut, selectedPackage);
 
-        Scene paymentScene = new Scene(paymentRoot);
-        Stage currentStage = (Stage) checkInDate.getScene().getWindow();
-        currentStage.setScene(paymentScene);
-        currentStage.setTitle("Payment");
+            paymentController.setRecipientEmail(loggedInEmail);
+
+            Scene paymentScene = new Scene(paymentRoot);
+            Stage currentStage = (Stage) checkInDate.getScene().getWindow();
+            currentStage.setScene(paymentScene);
+            currentStage.setTitle("Payment");
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load the payment screen.");

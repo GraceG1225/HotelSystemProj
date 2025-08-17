@@ -104,12 +104,10 @@ public class RegisterPage {
             }
 
             if (app.registerUser(email, password)) {
-                // Debug output (from original)
                 System.out.println("Registered:");
                 System.out.println("Email: " + email);
                 System.out.println("Password: " + password);
 
-                // Alert popup (from original)
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Registration Successful");
                 alert.setHeaderText(null);
@@ -119,7 +117,7 @@ public class RegisterPage {
                 message.setText("Account created successfully!");
                 message.setStyle("-fx-text-fill: green;");
 
-                // Redirect to login (from original, NOT main app)
+                // go back to login
                 app.showLoginScene();
             } else {
                 message.setText("Email already registered.");
